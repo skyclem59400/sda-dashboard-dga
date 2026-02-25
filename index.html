@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDA — Dashboard Refuge | Présentation DGA Sud-Artois</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" href="logo-sda.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --navy: #1B2A4A;
+            --teal: #3AAFA9;
+            --teal-light: #5CC8C2;
+            --coral: #E8734A;
+            --coral-light: #F09070;
+            --bg: #0F1923;
+            --bg-card: #162231;
+            --bg-card-hover: #1c2d42;
+            --text: #E8EDF3;
+            --text-muted: #8899AA;
+            --text-dim: #556677;
+            --green: #4CAF50;
+            --red: #EF5350;
+            --amber: #FFB74D;
+            --purple: #AB47BC;
+            --radius: 16px;
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* BACKGROUND */
+        .bg-pattern { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 0; overflow: hidden; }
+        .bg-pattern::before {
+            content: ''; position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(58,175,169,0.08) 0%, transparent 70%);
+            top: -100px; right: -100px; animation: float 20s ease-in-out infinite;
+        }
+        .bg-pattern::after {
+            content: ''; position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(232,115,74,0.06) 0%, transparent 70%);
+            bottom: -100px; left: -100px; animation: float 25s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(50px,-30px) scale(1.1); }
+            66% { transform: translate(-30px,50px) scale(0.9); }
+        }
+
+        /* LAYOUT */
+        .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 30px 24px 60px; }
+
+        /* HEADER */
+        .header {
+            display: flex; align-items: center; gap: 28px; margin-bottom: 0;
+            padding: 24px 32px;
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(58,175,169,0.08) 100%);
+            border-radius: var(--radius) var(--radius) 0 0;
+            border: 1px solid rgba(58,175,169,0.15);
+            border-bottom: none;
+            animation: slideDown 0.6s ease-out;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .header img { width: 90px; height: 90px; object-fit: contain; border-radius: 12px; background: white; padding: 6px; }
+        .header-text h1 {
+            font-size: 1.9rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--teal), var(--teal-light));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .header-text p { color: var(--text-muted); font-size: 1.05rem; margin-top: 4px; }
+        .header-badge {
+            margin-left: auto; padding: 10px 20px;
+            background: rgba(58,175,169,0.12); border: 1px solid rgba(58,175,169,0.25);
+            border-radius: 50px; font-size: 0.9rem; color: var(--teal-light); white-space: nowrap;
+        }
+
+        /* TABS */
+        .tabs-bar {
+            display: flex; gap: 0;
+            background: var(--bg-card);
+            border: 1px solid rgba(58,175,169,0.15);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .tab-btn {
+            flex: 1; padding: 16px 24px;
+            background: transparent; border: none;
+            color: var(--text-muted); font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-family: inherit;
+        }
+        .tab-btn:hover { color: var(--text); background: rgba(58,175,169,0.05); }
+        .tab-btn.active {
+            color: var(--teal-light);
+            border-bottom-color: var(--teal);
+            background: rgba(58,175,169,0.08);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* SECTION TITLES */
+        .section-title {
+            font-size: 1.3rem; font-weight: 600; margin: 36px 0 18px;
+            padding-left: 16px; border-left: 4px solid var(--teal); color: var(--text);
+        }
+        .section-title:first-child { margin-top: 0; }
+        .section-title span { color: var(--text-muted); font-weight: 400; font-size: 0.9rem; margin-left: 12px; }
+
+        /* KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 12px; }
+        .kpi-card {
+            background: var(--bg-card); border-radius: var(--radius); padding: 22px 24px;
+            border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;
+            opacity: 0; transform: translateY(20px);
+        }
+        .kpi-card.visible { opacity: 1; transform: translateY(0); }
+        .kpi-card:hover { background: var(--bg-card-hover); border-color: rgba(58,175,169,0.2); transform: translateY(-3px); box-shadow: var(--shadow); }
+        .kpi-label { font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .kpi-value { font-size: 1.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .kpi-sub { font-size: 0.82rem; margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+        .kpi-sub.positive { color: var(--green); }
+        .kpi-sub.negative { color: var(--red); }
+        .kpi-sub.neutral { color: var(--amber); }
+        .kpi-value.teal { color: var(--teal-light); }
+        .kpi-value.coral { color: var(--coral); }
+        .kpi-value.red { color: var(--red); }
+        .kpi-value.green { color: var(--green); }
+        .kpi-value.amber { color: var(--amber); }
+        .kpi-value.purple { color: var(--purple); }
+
+        /* CHARTS */
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 12px; }
+        .chart-card {
+            background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); opacity: 0; transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .chart-card.visible { opacity: 1; transform: translateY(0); }
+        .chart-card.full-width { grid-column: 1 / -1; }
+        .chart-title { font-size: 1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        /* ALERTS */
+        .alerts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-bottom: 12px; }
+        .alert-card {
+            background: var(--bg-card); border-radius: var(--radius); padding: 22px 24px;
+            border-left: 4px solid; opacity: 0; transform: translateX(-20px); transition: all 0.5s ease;
+        }
+        .alert-card.visible { opacity: 1; transform: translateX(0); }
+        .alert-card.danger { border-color: var(--red); }
+        .alert-card.warning { border-color: var(--amber); }
+        .alert-card.info { border-color: var(--teal); }
+        .alert-card h3 { font-size: 1rem; margin-bottom: 6px; }
+        .alert-card.danger h3 { color: var(--red); }
+        .alert-card.warning h3 { color: var(--amber); }
+        .alert-card.info h3 { color: var(--teal-light); }
+        .alert-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+        .alert-card .stat { font-size: 1.4rem; font-weight: 700; margin: 8px 0 4px; }
+        .alert-card.danger .stat { color: var(--red); }
+        .alert-card.warning .stat { color: var(--amber); }
+        .alert-card.info .stat { color: var(--teal-light); }
+
+        /* TABLE */
+        .table-card {
+            background: var(--bg-card); border-radius: var(--radius); padding: 24px;
+            border: 1px solid rgba(255,255,255,0.05); overflow-x: auto;
+            opacity: 0; transform: translateY(20px); transition: all 0.5s ease;
+        }
+        .table-card.visible { opacity: 1; transform: translateY(0); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        thead th {
+            text-align: left; padding: 12px 14px; color: var(--text-muted); font-weight: 600;
+            border-bottom: 2px solid rgba(255,255,255,0.08); text-transform: uppercase;
+            font-size: 0.78rem; letter-spacing: 0.5px;
+        }
+        thead th:not(:first-child) { text-align: right; }
+        tbody td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        tbody td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+        tbody tr:hover { background: rgba(58,175,169,0.04); }
+        tbody tr.total-row { font-weight: 700; border-top: 2px solid rgba(58,175,169,0.2); }
+        tbody tr.total-row td { padding-top: 14px; color: var(--teal-light); }
+        tbody tr.sub-row td:first-child { padding-left: 32px; color: var(--text-dim); font-style: italic; }
+
+        .evol-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+        .evol-badge.up { background: rgba(239,83,80,0.15); color: var(--red); }
+        .evol-badge.down { background: rgba(76,175,80,0.15); color: var(--green); }
+        .evol-badge.stable { background: rgba(255,183,77,0.15); color: var(--amber); }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 40px 0 20px; color: var(--text-dim); font-size: 0.82rem; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .chart-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; gap: 16px; }
+            .header-badge { margin-left: 0; }
+        }
+        @media (max-width: 600px) {
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .container { padding: 16px 12px 40px; }
+        }
+
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .pulse-once { animation: pulse 0.4s ease-in-out; }
+    </style>
+</head>
+<body>
+<div class="bg-pattern"></div>
+<div class="container">
+
+    <!-- HEADER -->
+    <header class="header">
+        <img src="logo-sda.png" alt="Logo SDA">
+        <div class="header-text">
+            <h1>SDA — Défendons les Animaux</h1>
+            <p>Tableau de bord du refuge — Présentation DGA Sud-Artois</p>
+        </div>
+        <div class="header-badge">Bilan 2023 — 2025</div>
+    </header>
+
+    <!-- TABS -->
+    <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('financier')">Bilan Financier</button>
+        <button class="tab-btn" onclick="switchTab('animaux')">Gestion des Animaux</button>
+        <button class="tab-btn" onclick="switchTab('interventions')">Interventions</button>
+    </div>
+
+    <!-- ╔═══════════════════════════════════════════╗
+         ║         ONGLET FINANCIER                  ║
+         ╚═══════════════════════════════════════════╝ -->
+    <div id="tab-financier" class="tab-content active">
+
+        <div class="section-title">Chiffres clés <span>Réalisé 2024 et 2025</span></div>
+        <div class="kpi-grid">
+            <div class="kpi-card" data-delay="0">
+                <div class="kpi-label">Produits 2025</div>
+                <div class="kpi-value teal" data-count="393070" data-suffix=" €">0 €</div>
+                <div class="kpi-sub negative">&#9660; -14 917 € vs 2024</div>
+            </div>
+            <div class="kpi-card" data-delay="100">
+                <div class="kpi-label">Charges 2025</div>
+                <div class="kpi-value coral" data-count="523903" data-suffix=" €">0 €</div>
+                <div class="kpi-sub positive">&#9660; -94 781 € vs 2024</div>
+            </div>
+            <div class="kpi-card" data-delay="200">
+                <div class="kpi-label">Déficit 2025</div>
+                <div class="kpi-value red" data-count="130833" data-prefix="-" data-suffix=" €">0 €</div>
+                <div class="kpi-sub positive">&#9650; Amélioré de 79 864 € vs 2024</div>
+            </div>
+            <div class="kpi-card" data-delay="300">
+                <div class="kpi-label">Déficit 2024</div>
+                <div class="kpi-value red" data-count="210697" data-prefix="-" data-suffix=" €">0 €</div>
+                <div class="kpi-sub negative">&#9679; Année la plus difficile</div>
+            </div>
+            <div class="kpi-card" data-delay="400">
+                <div class="kpi-label">Frais vétérinaires 2025</div>
+                <div class="kpi-value amber" data-count="103000" data-suffix=" €">0 €</div>
+                <div class="kpi-sub positive">&#9660; -18 045 € vs 2024</div>
+            </div>
+            <div class="kpi-card" data-delay="500">
+                <div class="kpi-label">LEGS reçus 2025</div>
+                <div class="kpi-value green" data-count="113000" data-suffix=" €">0 €</div>
+                <div class="kpi-sub positive">&#10003; Déficit ramené à -17 833 €</div>
+            </div>
+        </div>
+
+        <div class="section-title">Structure financière 2025 <span>Répartition des produits et charges réalisés</span></div>
+        <div class="chart-grid">
+            <div class="chart-card"><div class="chart-title">Répartition des produits 2025</div><canvas id="chartProduits"></canvas></div>
+            <div class="chart-card"><div class="chart-title">Répartition des charges 2025</div><canvas id="chartCharges"></canvas></div>
+        </div>
+
+        <div class="section-title">Comparaison 2024 / 2025 <span>Évolution des réalisés</span></div>
+        <div class="chart-grid">
+            <div class="chart-card full-width"><div class="chart-title">Produits vs Charges — 2024 et 2025</div><canvas id="chartEvolution" height="100"></canvas></div>
+        </div>
+
+        <div class="section-title">Détail des charges externes <span>Comparaison des postes principaux 2024 / 2025</span></div>
+        <div class="chart-grid">
+            <div class="chart-card full-width"><div class="chart-title">Ventilation des charges externes — Réalisé 2024 vs 2025</div><canvas id="chartChargesDetail" height="90"></canvas></div>
+        </div>
+
+        <div class="section-title">Points de vigilance <span>Difficultés identifiées</span></div>
+        <div class="alerts-grid">
+            <div class="alert-card danger" data-delay="0">
+                <h3>&#9888; Déficit structurel récurrent</h3>
+                <div class="stat">-130 833 € en 2025</div>
+                <p>Le refuge opère en déficit depuis plusieurs années. En 2024, le déficit atteignait <strong>-210 697 €</strong>. Malgré une amélioration de 79 864 €, les charges dépassent structurellement les produits.</p>
+            </div>
+            <div class="alert-card danger" data-delay="100">
+                <h3>&#9888; Poids des frais vétérinaires</h3>
+                <div class="stat">103 000 € en 2025</div>
+                <p>Les soins vétérinaires + médicaments représentent à eux seuls <strong>131 600 €</strong> en 2025 (25% des charges totales). C'est le poste le plus lourd après les salaires, et il est incompressible pour le bien-être animal.</p>
+            </div>
+            <div class="alert-card warning" data-delay="200">
+                <h3>&#9888; Dépendance aux cotisations communales</h3>
+                <div class="stat">49% des produits</div>
+                <p>Les cotisations des communes (193 000 € en 2025) représentent près de la moitié des recettes. Toute baisse ou retard de versement impacte directement la trésorerie du refuge.</p>
+            </div>
+            <div class="alert-card warning" data-delay="300">
+                <h3>&#9888; Hausse du poste nourriture & litière</h3>
+                <div class="stat">+73% entre 2024 et 2025</div>
+                <p>Le poste nourriture et litière animaux est passé de 5 200 € (2024) à 9 000 € (2025). Une hausse significative liée à l'augmentation du nombre d'animaux accueillis et à l'inflation sur les produits.</p>
+            </div>
+            <div class="alert-card info" data-delay="400">
+                <h3>&#10003; Effort majeur de maîtrise des charges</h3>
+                <div class="stat">-94 781 € entre 2024 et 2025</div>
+                <p>Les charges totales sont passées de 618 684 € (2024) à 523 903 € (2025), soit une réduction de <strong>15%</strong>. Un effort de gestion remarquable, notamment sur les charges externes (-91 576 €).</p>
+            </div>
+            <div class="alert-card info" data-delay="500">
+                <h3>&#10003; Impact positif des LEGS</h3>
+                <div class="stat">113 000 € en 2025</div>
+                <p>Grâce aux legs reçus en 2025, le déficit réel est ramené à <strong>-17 833 €</strong>, contre -210 697 € en 2024. Cette ressource exceptionnelle a considérablement allégé la situation financière.</p>
+            </div>
+        </div>
+
+        <div class="section-title">Tableau récapitulatif <span>Réalisé 2024 et 2025</span></div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>Poste</th><th>Réalisé 2024</th><th>Réalisé 2025</th><th>Évolution</th></tr></thead>
+                <tbody>
+                    <tr><td colspan="4" style="color:var(--teal-light);font-weight:700;padding-top:16px;">PRODUITS</td></tr>
+                    <tr><td>Communes (cotisations)</td><td>200 107 €</td><td>193 000 €</td><td><span class="evol-badge stable">-3,6%</span></td></tr>
+                    <tr><td>Adoptions</td><td>75 687 €</td><td>72 300 €</td><td><span class="evol-badge stable">-4,5%</span></td></tr>
+                    <tr><td>Adhésions</td><td>12 580 €</td><td>8 970 €</td><td><span class="evol-badge up">-28,7%</span></td></tr>
+                    <tr><td>Pensions</td><td>2 520 €</td><td>2 700 €</td><td><span class="evol-badge down">+7,1%</span></td></tr>
+                    <tr><td>Retrouvés</td><td>15 121 €</td><td>14 600 €</td><td><span class="evol-badge stable">-3,4%</span></td></tr>
+                    <tr><td>Abandons</td><td>10 685 €</td><td>5 200 €</td><td><span class="evol-badge up">-51,3%</span></td></tr>
+                    <tr><td>Vente manifestations</td><td>6 742 €</td><td>11 000 €</td><td><span class="evol-badge down">+63,2%</span></td></tr>
+                    <tr><td>Dons</td><td>77 842 €</td><td>80 000 €</td><td><span class="evol-badge down">+2,8%</span></td></tr>
+                    <tr><td>Autres produits</td><td>6 703 €</td><td>5 300 €</td><td><span class="evol-badge up">-20,9%</span></td></tr>
+                    <tr class="total-row"><td>Total Produits</td><td>407 987 €</td><td>393 070 €</td><td><span class="evol-badge stable">-3,7%</span></td></tr>
+                    <tr><td colspan="4" style="color:var(--coral);font-weight:700;padding-top:24px;">CHARGES</td></tr>
+                    <tr><td>Achats & charges externes</td><td>360 576 €</td><td>269 000 €</td><td><span class="evol-badge down">-25,4%</span></td></tr>
+                    <tr class="sub-row"><td>Frais vétérinaires</td><td>121 045 €</td><td>103 000 €</td><td><span class="evol-badge down">-14,9%</span></td></tr>
+                    <tr class="sub-row"><td>Médicaments</td><td>36 121 €</td><td>28 600 €</td><td><span class="evol-badge down">-20,8%</span></td></tr>
+                    <tr class="sub-row"><td>Nourriture & litière</td><td>5 200 €</td><td>9 000 €</td><td><span class="evol-badge up">+73,1%</span></td></tr>
+                    <tr class="sub-row"><td>Énergie, eau, carburant</td><td>26 800 €</td><td>28 700 €</td><td><span class="evol-badge stable">+7,1%</span></td></tr>
+                    <tr class="sub-row"><td>Honoraires / Prestations</td><td>17 055 €</td><td>23 000 €</td><td><span class="evol-badge up">+34,9%</span></td></tr>
+                    <tr class="sub-row"><td>Télécom, fournitures admin</td><td>23 800 €</td><td>13 300 €</td><td><span class="evol-badge down">-44,1%</span></td></tr>
+                    <tr class="sub-row"><td>Location</td><td>16 345 €</td><td>16 345 €</td><td><span class="evol-badge stable">0%</span></td></tr>
+                    <tr><td>Impôts & taxes</td><td>7 349 €</td><td>2 503 €</td><td><span class="evol-badge down">-65,9%</span></td></tr>
+                    <tr><td>Salaires & traitements</td><td>173 262 €</td><td>175 000 €</td><td><span class="evol-badge stable">+1,0%</span></td></tr>
+                    <tr><td>Charges sociales</td><td>40 468 €</td><td>44 200 €</td><td><span class="evol-badge stable">+9,2%</span></td></tr>
+                    <tr><td>Dotations amortissements</td><td>31 153 €</td><td>32 200 €</td><td><span class="evol-badge stable">+3,4%</span></td></tr>
+                    <tr><td>Autres charges</td><td>676 €</td><td>1 000 €</td><td><span class="evol-badge up">+47,9%</span></td></tr>
+                    <tr class="total-row"><td>Total Charges</td><td>618 684 €</td><td>523 903 €</td><td><span class="evol-badge down">-15,3%</span></td></tr>
+                    <tr><td colspan="4" style="padding-top:24px;"></td></tr>
+                    <tr style="font-weight:700;font-size:1rem;"><td>Résultat</td><td style="color:var(--red)">-210 697 €</td><td style="color:var(--red)">-130 833 €</td><td><span class="evol-badge down">+37,9%</span></td></tr>
+                    <tr><td>LEGS</td><td>—</td><td>113 000 €</td><td></td></tr>
+                    <tr style="font-weight:700;font-size:1rem;"><td>Résultat avec LEGS</td><td style="color:var(--red)">-210 697 €</td><td style="color:var(--red)">-17 833 €</td><td><span class="evol-badge down">+91,5%</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ╔═══════════════════════════════════════════╗
+         ║         ONGLET GESTION DES ANIMAUX        ║
+         ╚═══════════════════════════════════════════╝ -->
+    <div id="tab-animaux" class="tab-content">
+
+        <div class="section-title">Vue d'ensemble <span>Activité du refuge sur les 3 dernières années — gestion informatisée du refuge depuis 2023</span></div>
+        <div class="kpi-grid">
+            <div class="kpi-card" data-delay="0">
+                <div class="kpi-label">Animaux pris en charge (total)</div>
+                <div class="kpi-value teal" data-count="2495" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; Depuis le début du suivi</div>
+            </div>
+            <div class="kpi-card" data-delay="100">
+                <div class="kpi-label">Mouvements enregistrés</div>
+                <div class="kpi-value coral" data-count="7164" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; Entrées, sorties, transferts</div>
+            </div>
+            <div class="kpi-card" data-delay="200">
+                <div class="kpi-label">Adoptions réussies 2025</div>
+                <div class="kpi-value green" data-count="442" data-suffix="">0</div>
+                <div class="kpi-sub negative">&#9660; -25 vs 2024 (467)</div>
+            </div>
+            <div class="kpi-card" data-delay="300">
+                <div class="kpi-label">Mises en fourrière 2025</div>
+                <div class="kpi-value amber" data-count="688" data-suffix="">0</div>
+                <div class="kpi-sub negative">&#9650; +15 vs 2024 (673)</div>
+            </div>
+            <div class="kpi-card" data-delay="400">
+                <div class="kpi-label">Familles d'accueil 2025</div>
+                <div class="kpi-value purple" data-count="246" data-suffix="">0</div>
+                <div class="kpi-sub positive">&#9650; +51 vs 2024 (195)</div>
+            </div>
+            <div class="kpi-card" data-delay="500">
+                <div class="kpi-label">Décès 2025</div>
+                <div class="kpi-value red" data-count="46" data-suffix="">0</div>
+                <div class="kpi-sub positive">&#9660; -67 vs 2024 (113)</div>
+            </div>
+        </div>
+
+        <!-- Activité par année -->
+        <div class="section-title">Activité par année <span>Mouvements et animaux uniques 2023 — 2025</span></div>
+        <div class="chart-grid">
+            <div class="chart-card full-width">
+                <div class="chart-title">Mouvements par type — 2023, 2024, 2025 (animaux uniques)</div>
+                <canvas id="chartMouvements" height="110"></canvas>
+            </div>
+        </div>
+
+        <!-- Espèces -->
+        <div class="section-title">Répartition par espèce <span>Animaux uniques par année</span></div>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">Espèces — cumul global</div>
+                <canvas id="chartEspeces"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Chiens vs Chats par année</div>
+                <canvas id="chartChiensChats"></canvas>
+            </div>
+        </div>
+
+        <!-- Situations actuelles -->
+        <div class="section-title">Situations actuelles <span>Devenir des animaux pris en charge</span></div>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">Situation actuelle des animaux</div>
+                <canvas id="chartSituations"></canvas>
+            </div>
+        </div>
+
+        <!-- Tableau récap animaux -->
+        <div class="section-title">Tableau récapitulatif <span>Mouvements uniques par année</span></div>
+        <div class="table-card">
+            <table>
+                <thead><tr><th>Indicateur</th><th>2023</th><th>2024</th><th>2025</th><th>Évolution 24→25</th></tr></thead>
+                <tbody>
+                    <tr><td colspan="5" style="color:var(--teal-light);font-weight:700;padding-top:16px;">ENTRÉES</td></tr>
+                    <tr><td>Mises en fourrière</td><td>659</td><td>673</td><td>688</td><td><span class="evol-badge stable">+2,2%</span></td></tr>
+                    <tr><td>Abandons</td><td>223</td><td>166</td><td>154</td><td><span class="evol-badge stable">-7,2%</span></td></tr>
+                    <tr><td>Nouveaux animaux (1re entrée)</td><td>877</td><td>775</td><td>796</td><td><span class="evol-badge stable">+2,7%</span></td></tr>
+                    <tr><td colspan="5" style="color:var(--green);font-weight:700;padding-top:24px;">SORTIES POSITIVES</td></tr>
+                    <tr><td>Adoptions</td><td>473</td><td>467</td><td>442</td><td><span class="evol-badge up">-5,4%</span></td></tr>
+                    <tr><td>Restitutions au propriétaire</td><td>278</td><td>190</td><td>147</td><td><span class="evol-badge up">-22,6%</span></td></tr>
+                    <tr><td>Placements en famille d'accueil</td><td>61</td><td>195</td><td>246</td><td><span class="evol-badge down">+26,2%</span></td></tr>
+                    <tr><td colspan="5" style="color:var(--coral);font-weight:700;padding-top:24px;">SITUATION</td></tr>
+                    <tr><td>Décès</td><td>105</td><td>113</td><td>46</td><td><span class="evol-badge down">-59,3%</span></td></tr>
+                    <tr><td colspan="5" style="color:var(--purple);font-weight:700;padding-top:24px;">ESPÈCES (animaux uniques)</td></tr>
+                    <tr><td>Chiens</td><td>516</td><td>526</td><td>544</td><td><span class="evol-badge down">+3,4%</span></td></tr>
+                    <tr><td>Chats</td><td>441</td><td>467</td><td>459</td><td><span class="evol-badge stable">-1,7%</span></td></tr>
+                    <tr><td>NAC (perruches, lapins...)</td><td>2</td><td>3</td><td>13</td><td><span class="evol-badge up">+333%</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Points clés animaux -->
+        <div class="section-title">Points clés <span>Ce que révèlent les données</span></div>
+        <div class="alerts-grid">
+            <div class="alert-card info" data-delay="0">
+                <h3>&#10003; Forte capacité d'adoption</h3>
+                <div class="stat">1 382 adoptions en 3 ans</div>
+                <p>Le refuge a réussi <strong>473 adoptions</strong> en 2023, <strong>467</strong> en 2024 et <strong>442</strong> en 2025. Un volume considérable qui témoigne d'un travail quotidien intense d'accueil et de placement.</p>
+            </div>
+            <div class="alert-card info" data-delay="100">
+                <h3>&#10003; Essor des familles d'accueil</h3>
+                <div class="stat">x4 en 2 ans</div>
+                <p>Le nombre de placements en famille d'accueil est passé de <strong>61 en 2023</strong> à <strong>246 en 2025</strong>. Un réseau solidaire qui s'étoffe et allège la pression sur les infrastructures du refuge.</p>
+            </div>
+            <div class="alert-card warning" data-delay="200">
+                <h3>&#9888; Flux d'entrées massif</h3>
+                <div class="stat">688 mises en fourrière en 2025</div>
+                <p>En légère hausse par rapport à 2024 (673), le refuge traite près de <strong>700 mises en fourrière par an</strong>. Chaque animal nécessite identification, soins, hébergement et suivi administratif.</p>
+            </div>
+            <div class="alert-card danger" data-delay="400">
+                <h3>&#9888; 247 décès enregistrés</h3>
+                <div class="stat">10% des animaux pris en charge</div>
+                <p>Sur 2 495 animaux uniques, 247 sont décédés. En baisse en 2025 (46 vs 113 en 2024), mais chaque décès rappelle la fragilité des animaux recueillis et le poids des soins nécessaires.</p>
+            </div>
+            <div class="alert-card info" data-delay="500">
+                <h3>&#10003; 74% des animaux retrouvent un foyer</h3>
+                <div class="stat">1 855 chez un propriétaire</div>
+                <p>Sur les 2 495 animaux suivis, <strong>1 855 sont chez un propriétaire</strong>, 109 en famille d'accueil et 193 en refuge. Le taux de placement positif du refuge est remarquable.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ╔═══════════════════════════════════════════╗
+         ║         ONGLET INTERVENTIONS              ║
+         ╚═══════════════════════════════════════════╝ -->
+    <div id="tab-interventions" class="tab-content">
+
+        <div class="section-title">Vue d'ensemble <span>Interventions de jour et astreintes de nuit par territoire</span></div>
+        <div class="kpi-grid">
+            <div class="kpi-card" data-delay="0">
+                <div class="kpi-label">Total interventions</div>
+                <div class="kpi-value teal" data-count="347" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; Jour + nuit, tous territoires</div>
+            </div>
+            <div class="kpi-card" data-delay="100">
+                <div class="kpi-label">Interventions de jour</div>
+                <div class="kpi-value teal" data-count="261" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; 75% du total</div>
+            </div>
+            <div class="kpi-card" data-delay="200">
+                <div class="kpi-label">Astreintes de nuit</div>
+                <div class="kpi-value coral" data-count="86" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; 25% du total</div>
+            </div>
+            <div class="kpi-card" data-delay="300">
+                <div class="kpi-label">Interventions nuit non conformes</div>
+                <div class="kpi-value" style="color: var(--red);" data-count="62" data-suffix="">0</div>
+                <div class="kpi-sub negative">&#9650; 72% des astreintes de nuit</div>
+            </div>
+            <div class="kpi-card" data-delay="400">
+                <div class="kpi-label">Territoires couverts</div>
+                <div class="kpi-value teal" data-count="4" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; CAC, CA2C, Sud Artois, Indépendantes</div>
+            </div>
+            <div class="kpi-card" data-delay="500">
+                <div class="kpi-label">Chiens récupérés (jour)</div>
+                <div class="kpi-value teal" data-count="99" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; vs 161 chats</div>
+            </div>
+        </div>
+
+        <div class="section-title">Répartition par territoire <span>Interventions de jour vs astreintes de nuit</span></div>
+        <div class="chart-grid">
+            <div class="chart-card"><div class="chart-title">Interventions par territoire — Jour vs Nuit</div><canvas id="chartInterTerritoire" height="180"></canvas></div>
+            <div class="chart-card"><div class="chart-title">Part de chaque territoire (total)</div><canvas id="chartInterPart" height="180"></canvas></div>
+        </div>
+
+        <div class="section-title">Détail par type d'animal <span>Chiens, chats et interventions sans animaux</span></div>
+        <div class="chart-grid">
+            <div class="chart-card full-width"><div class="chart-title">Ventilation par animal et créneau — par territoire</div><canvas id="chartInterAnimaux" height="100"></canvas></div>
+        </div>
+
+        <div class="section-title">Répartition par commune <span>Top des communes les plus sollicitées par territoire</span></div>
+        <div class="chart-grid">
+            <div class="chart-card"><div class="chart-title">CAC — CC Cambrai (171 interventions)</div><canvas id="chartCommunesCAC" height="200"></canvas></div>
+            <div class="chart-card"><div class="chart-title">CA2C — Cc Caudry (119 interventions)</div><canvas id="chartCommunesCA2C" height="200"></canvas></div>
+            <div class="chart-card"><div class="chart-title">CC Sud Artois (11 interventions)</div><canvas id="chartCommunesSA" height="200"></canvas></div>
+            <div class="chart-card"><div class="chart-title">Communes indépendantes (46 interventions)</div><canvas id="chartCommunesIndep" height="200"></canvas></div>
+        </div>
+
+        <div class="section-title">Conformité des astreintes de nuit <span>Interventions conformes vs non conformes</span></div>
+        <div class="chart-grid">
+            <div class="chart-card"><div class="chart-title">Conformité par territoire</div><canvas id="chartConformite" height="180"></canvas></div>
+            <div class="chart-card"><div class="chart-title">Taux de non-conformité</div><canvas id="chartTauxNonConf" height="180"></canvas></div>
+        </div>
+
+        <div class="section-title">Tableau récapitulatif <span>Données complètes par territoire</span></div>
+        <div class="table-card" data-delay="0">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Territoire</th>
+                        <th colspan="4" style="text-align:center; border-bottom: 2px solid var(--teal);">Interventions de jour</th>
+                        <th colspan="4" style="text-align:center; border-bottom: 2px solid var(--coral);">Astreintes de nuit</th>
+                        <th colspan="2" style="text-align:center; border-bottom: 2px solid var(--red);">Conformité nuit</th>
+                    </tr>
+                    <tr>
+                        <th>Chiens</th><th>Chats</th><th>Sans animal</th><th>Total</th>
+                        <th>Chiens</th><th>Chats</th><th>Sans animal</th><th>Total</th>
+                        <th>Conforme</th><th>Non conforme</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>CAC (CC Cambrai)</strong></td>
+                        <td>47</td><td>81</td><td>1</td><td><strong>128</strong></td>
+                        <td>29</td><td>7</td><td>7</td><td><strong>43</strong></td>
+                        <td><span class="evol-badge down" style="font-size:0.85rem;">13</span></td>
+                        <td><span class="evol-badge up" style="font-size:0.85rem;">30</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CA2C (Cc Caudry)</strong></td>
+                        <td>37</td><td>57</td><td>0</td><td><strong>94</strong></td>
+                        <td>19</td><td>2</td><td>4</td><td><strong>25</strong></td>
+                        <td><span class="evol-badge down" style="font-size:0.85rem;">9</span></td>
+                        <td><span class="evol-badge up" style="font-size:0.85rem;">17</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CC Sud Artois</strong></td>
+                        <td>4</td><td>5</td><td>0</td><td><strong>9</strong></td>
+                        <td>1</td><td>0</td><td>1</td><td><strong>2</strong></td>
+                        <td><span class="evol-badge down" style="font-size:0.85rem;">0</span></td>
+                        <td><span class="evol-badge up" style="font-size:0.85rem;">2</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Communes indépendantes</strong></td>
+                        <td>11</td><td>18</td><td>1</td><td><strong>30</strong></td>
+                        <td>15</td><td>0</td><td>1</td><td><strong>16</strong></td>
+                        <td><span class="evol-badge down" style="font-size:0.85rem;">3</span></td>
+                        <td><span class="evol-badge up" style="font-size:0.85rem;">13</span></td>
+                    </tr>
+                    <tr class="total-row" style="background: rgba(58,175,169,0.08); font-weight: bold;">
+                        <td>TOTAL</td>
+                        <td>99</td><td>161</td><td>2</td><td><strong>261</strong></td>
+                        <td>64</td><td>9</td><td>13</td><td><strong>86</strong></td>
+                        <td><span class="evol-badge down" style="font-size:0.85rem;">25</span></td>
+                        <td><span class="evol-badge up" style="font-size:0.85rem;">62</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">Points de vigilance <span>Constats sur les interventions</span></div>
+        <div class="alerts-grid">
+            <div class="alert-card danger" data-delay="0">
+                <h3>&#9888; 72% des astreintes de nuit non conformes</h3>
+                <div class="stat">62 sur 86 interventions</div>
+                <p>Sur l'ensemble des territoires, <strong>près de 3 astreintes de nuit sur 4</strong> sont non conformes. Ce taux alarmant interroge sur les conditions d'intervention nocturne et la capacité à respecter les protocoles.</p>
+            </div>
+            <div class="alert-card warning" data-delay="100">
+                <h3>&#9888; CAC concentre 49% des interventions</h3>
+                <div class="stat">171 interventions sur 347</div>
+                <p>Le territoire de la <strong>CC Cambrai</strong> représente à lui seul près de la moitié de l'activité d'intervention (128 de jour + 43 de nuit). Une pression considérable sur les équipes de ce secteur.</p>
+            </div>
+            <div class="alert-card warning" data-delay="200">
+                <h3>&#9888; Communes indépendantes : 81% de non-conformité la nuit</h3>
+                <div class="stat">13 non conformes sur 16</div>
+                <p>Les communes indépendantes affichent le pire taux de non-conformité nocturne. L'éloignement géographique et l'absence de coordination intercommunale compliquent les interventions de nuit.</p>
+            </div>
+            <div class="alert-card info" data-delay="300">
+                <h3>&#10003; Les chats, première cause d'intervention de jour</h3>
+                <div class="stat">161 chats vs 99 chiens</div>
+                <p>En journée, les interventions concernent majoritairement des chats (<strong>62%</strong>), suivis des chiens (38%). Une réalité liée aux chats errants qui nécessitent des captures plus fréquentes.</p>
+            </div>
+            <div class="alert-card info" data-delay="400">
+                <h3>&#10003; Nuit : les chiens dominent</h3>
+                <div class="stat">64 chiens vs 9 chats la nuit</div>
+                <p>En astreinte de nuit, la tendance s'inverse : <strong>74% des interventions</strong> concernent des chiens. Les chiens errants ou signalés de nuit représentent un enjeu sécuritaire pour les communes.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>SDA — Défendons les Animaux &middot; Dashboard généré pour la Communauté de Communes du Sud-Artois &middot; Février 2026</p>
+    </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   TAB SWITCHING
+   ═══════════════════════════════════════════════ */
+let chartsInitialized = { financier: false, animaux: false, interventions: false };
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+    // Re-observe elements for animation
+    document.querySelectorAll('#tab-' + tab + ' .kpi-card, #tab-' + tab + ' .chart-card, #tab-' + tab + ' .alert-card, #tab-' + tab + ' .table-card').forEach(el => {
+        if (!el.classList.contains('visible')) observer.observe(el);
+    });
+    document.querySelectorAll('#tab-' + tab + ' [data-count]').forEach(el => {
+        if (!el.dataset.animated) counterObserver.observe(el);
+    });
+
+    // Init charts on first visit
+    if (!chartsInitialized[tab]) {
+        chartsInitialized[tab] = true;
+        if (tab === 'animaux') setTimeout(initAnimalCharts, 100);
+        if (tab === 'interventions') setTimeout(initInterventionCharts, 100);
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   INTERSECTION OBSERVER
+   ═══════════════════════════════════════════════ */
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const delay = entry.target.dataset.delay || 0;
+            setTimeout(() => entry.target.classList.add('visible'), delay);
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('#tab-financier .kpi-card, #tab-financier .chart-card, #tab-financier .alert-card, #tab-financier .table-card').forEach(el => observer.observe(el));
+
+/* ═══════════════════════════════════════════════
+   COUNTER ANIMATION
+   ═══════════════════════════════════════════════ */
+function animateCounter(el, target, duration = 1800) {
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const startTime = performance.now();
+    function update(t) {
+        const p = Math.min((t - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + Math.floor(eased * target).toLocaleString('fr-FR') + suffix;
+        if (p < 1) requestAnimationFrame(update);
+        else el.classList.add('pulse-once');
+    }
+    requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.dataset.count);
+            const delay = parseInt(el.closest('.kpi-card')?.dataset.delay || 0);
+            setTimeout(() => animateCounter(el, target), delay + 200);
+            el.dataset.animated = '1';
+            counterObserver.unobserve(el);
+        }
+    });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('#tab-financier [data-count]').forEach(el => counterObserver.observe(el));
+
+/* ═══════════════════════════════════════════════
+   CHART.JS — Global
+   ═══════════════════════════════════════════════ */
+Chart.defaults.color = '#8899AA';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+/* ═══════════════════════════════════════════════
+   FINANCIAL CHARTS (init immediately)
+   ═══════════════════════════════════════════════ */
+chartsInitialized.financier = true;
+
+new Chart(document.getElementById('chartProduits'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Communes (cotisations)', 'Dons', 'Adoptions', 'Retrouvés', 'Vente manif.', 'Adhésions', 'Autres'],
+        datasets: [{ data: [193000,80000,72300,14600,11000,8970,13200], backgroundColor: ['#3AAFA9','#5CC8C2','#E8734A','#F09070','#FFB74D','#4CAF50','#78909C'], borderWidth: 0, hoverOffset: 10 }]
+    },
+    options: { responsive: true, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('fr-FR')} € (${((ctx.parsed/393070)*100).toFixed(1)}%)` } } }, animation: { animateRotate: true, duration: 1200 } }
+});
+
+new Chart(document.getElementById('chartCharges'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Charges externes', 'Salaires', 'Charges sociales', 'Amortissements', 'Impôts', 'Autres'],
+        datasets: [{ data: [269000,175000,44200,32200,2503,1000], backgroundColor: ['#E8734A','#F09070','#FFB74D','#3AAFA9','#5CC8C2','#78909C'], borderWidth: 0, hoverOffset: 10 }]
+    },
+    options: { responsive: true, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('fr-FR')} € (${((ctx.parsed/523903)*100).toFixed(1)}%)` } } }, animation: { animateRotate: true, duration: 1200 } }
+});
+
+new Chart(document.getElementById('chartEvolution'), {
+    type: 'bar',
+    data: {
+        labels: ['Réalisé 2024', 'Réalisé 2025'],
+        datasets: [
+            { label: 'Produits', data: [407987,393070], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 2, borderRadius: 6 },
+            { label: 'Charges', data: [618684,523903], backgroundColor: 'rgba(232,115,74,0.7)', borderColor: '#E8734A', borderWidth: 2, borderRadius: 6 },
+            { label: 'Déficit', data: [210697,130833], backgroundColor: 'rgba(239,83,80,0.5)', borderColor: '#EF5350', borderWidth: 2, borderRadius: 6 }
+        ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => { const p = ctx.dataset.label === 'Déficit' ? '-' : ''; return ` ${ctx.dataset.label}: ${p}${ctx.parsed.y.toLocaleString('fr-FR')} €`; } } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => (v/1000)+'k €' } }, x: { grid: { display: false } } }, animation: { duration: 1500 } }
+});
+
+new Chart(document.getElementById('chartChargesDetail'), {
+    type: 'bar',
+    data: {
+        labels: ['Frais vétérinaires','Médicaments','Énergie & fluides','Télécom & admin','Honoraires / Prestations','Location','Nourriture & litière'],
+        datasets: [
+            { label: 'Réalisé 2024', data: [121045,36121,26800,23800,17055,16345,5200], backgroundColor: 'rgba(136,153,170,0.6)', borderColor: '#8899AA', borderWidth: 1, borderRadius: 4 },
+            { label: 'Réalisé 2025', data: [103000,28600,28700,13300,23000,16345,9000], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 }
+        ]
+    },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.x.toLocaleString('fr-FR')} €` } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { callback: v => (v/1000)+'k €' } }, y: { grid: { display: false } } }, animation: { duration: 1500 } }
+});
+
+/* ═══════════════════════════════════════════════
+   ANIMAL CHARTS (lazy init)
+   ═══════════════════════════════════════════════ */
+function initAnimalCharts() {
+    // Mouvements par type
+    new Chart(document.getElementById('chartMouvements'), {
+        type: 'bar',
+        data: {
+            labels: ['Mises en fourrière', 'Adoptions', 'Abandons', 'Restitutions', 'Familles d\'accueil', 'Décès'],
+            datasets: [
+                { label: '2023', data: [659,473,223,278,61,105], backgroundColor: 'rgba(136,153,170,0.6)', borderColor: '#8899AA', borderWidth: 1, borderRadius: 4 },
+                { label: '2024', data: [673,467,166,190,195,113], backgroundColor: 'rgba(232,115,74,0.7)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 },
+                { label: '2025', data: [688,442,154,147,246,46], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} animaux` } } },
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }, x: { grid: { display: false } } },
+            animation: { duration: 1500 }
+        }
+    });
+
+    // Espèces doughnut
+    new Chart(document.getElementById('chartEspeces'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Chiens', 'Chats', 'NAC'],
+            datasets: [{ data: [1353, 1124, 18], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC'], borderWidth: 0, hoverOffset: 10 }]
+        },
+        options: { responsive: true, cutout: '60%', plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/2495)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+    // Chiens vs Chats par année
+    new Chart(document.getElementById('chartChiensChats'), {
+        type: 'bar',
+        data: {
+            labels: ['2023', '2024', '2025'],
+            datasets: [
+                { label: 'Chiens', data: [516,526,544], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chats', data: [441,467,459], backgroundColor: 'rgba(232,115,74,0.7)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 },
+                { label: 'NAC', data: [2,3,13], backgroundColor: 'rgba(171,71,188,0.7)', borderColor: '#AB47BC', borderWidth: 1, borderRadius: 4 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }, x: { grid: { display: false } } }, animation: { duration: 1500 } }
+    });
+
+    // Situations actuelles
+    new Chart(document.getElementById('chartSituations'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Chez le propriétaire', 'Décédé', 'En refuge', 'En famille d\'accueil', 'Transfert asso.', 'Dans la nature', 'En fourrière'],
+            datasets: [{ data: [1855,247,193,109,63,15,12], backgroundColor: ['#4CAF50','#EF5350','#3AAFA9','#AB47BC','#FFB74D','#78909C','#E8734A'], borderWidth: 0, hoverOffset: 10 }]
+        },
+        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/2495)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+}
+
+/* ═══════════════════════════════════════════════
+   INTERVENTION CHARTS (lazy init)
+   ═══════════════════════════════════════════════ */
+function initInterventionCharts() {
+    const territoires = ['CAC\n(CC Cambrai)', 'CA2C\n(Cc Caudry)', 'CC Sud\nArtois', 'Communes\nindépendantes'];
+
+    // Interventions par territoire — Jour vs Nuit (stacked bar)
+    new Chart(document.getElementById('chartInterTerritoire'), {
+        type: 'bar',
+        data: {
+            labels: territoires,
+            datasets: [
+                { label: 'Jour', data: [128,94,9,30], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
+                { label: 'Nuit', data: [43,25,2,16], backgroundColor: 'rgba(232,115,74,0.7)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} interventions` } }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+            },
+            animation: { duration: 1500 }
+        }
+    });
+
+    // Part de chaque territoire (doughnut)
+    new Chart(document.getElementById('chartInterPart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['CAC (CC Cambrai)', 'CA2C (Cc Caudry)', 'CC Sud Artois', 'Communes indépendantes'],
+            datasets: [{ data: [171,119,11,46], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D'], borderWidth: 0, hoverOffset: 10 }]
+        },
+        options: {
+            responsive: true, cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/347)*100).toFixed(1)}%)` } }
+            },
+            animation: { duration: 1200 }
+        }
+    });
+
+    // Ventilation par animal et créneau (grouped bar)
+    new Chart(document.getElementById('chartInterAnimaux'), {
+        type: 'bar',
+        data: {
+            labels: ['CAC (CC Cambrai)', 'CA2C (Cc Caudry)', 'CC Sud Artois', 'Communes indépendantes'],
+            datasets: [
+                { label: 'Chiens (jour)', data: [47,37,4,11], backgroundColor: 'rgba(58,175,169,0.8)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chats (jour)', data: [81,57,5,18], backgroundColor: 'rgba(58,175,169,0.4)', borderColor: '#5CC8C2', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chiens (nuit)', data: [29,19,1,15], backgroundColor: 'rgba(232,115,74,0.8)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chats (nuit)', data: [7,2,0,0], backgroundColor: 'rgba(232,115,74,0.4)', borderColor: '#F09070', borderWidth: 1, borderRadius: 4 },
+                { label: 'Sans animal', data: [8,4,1,2], backgroundColor: 'rgba(136,153,170,0.5)', borderColor: '#8899AA', borderWidth: 1, borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}` } }
+            },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true },
+                x: { grid: { display: false } }
+            },
+            animation: { duration: 1500 }
+        }
+    });
+
+    // Conformité par territoire (stacked bar horizontal)
+    new Chart(document.getElementById('chartConformite'), {
+        type: 'bar',
+        data: {
+            labels: ['CAC\n(CC Cambrai)', 'CA2C\n(Cc Caudry)', 'CC Sud\nArtois', 'Communes\nindép.'],
+            datasets: [
+                { label: 'Conforme', data: [13,9,0,3], backgroundColor: 'rgba(76,175,80,0.7)', borderColor: '#4CAF50', borderWidth: 1, borderRadius: 4 },
+                { label: 'Non conforme', data: [30,17,2,13], backgroundColor: 'rgba(239,83,80,0.7)', borderColor: '#EF5350', borderWidth: 1, borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true, indexAxis: 'y',
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.x} interventions` } }
+            },
+            scales: {
+                x: { stacked: true, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true },
+                y: { stacked: true, grid: { display: false } }
+            },
+            animation: { duration: 1500 }
+        }
+    });
+
+    // Répartition par commune — CAC
+    new Chart(document.getElementById('chartCommunesCAC'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Cambrai','Iwuy','Neuville-St-Rémy','Raillencourt','Thun-Lévêque','Paillencourt','Autres (19 communes)'],
+            datasets: [{ data: [100,14,11,5,5,5,31], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#78909C'], borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/171)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+    // Répartition par commune — CA2C
+    new Chart(document.getElementById('chartCommunesCA2C'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Caudry','Le Cateau','Avesnes-les-Aubert','Beauvois-en-Cis','Quiévy','Carnières','Cattenieres','Autres (17 communes)'],
+            datasets: [{ data: [31,26,11,10,9,8,6,18], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#F09070','#78909C'], borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/119)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+    // Répartition par commune — Sud Artois
+    new Chart(document.getElementById('chartCommunesSA'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Havrincourt','Haplincourt','Hermies','Bapaume','Vaulx-Vraucourt','Barastre'],
+            datasets: [{ data: [4,2,2,1,1,1], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2'], borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/11)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+    // Répartition par commune — Communes indépendantes
+    new Chart(document.getElementById('chartCommunesIndep'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Lourches','Landrecies','Pronville-en-Artois','Beaurain','Mastaing','Maroilles','Autres (14 communes)'],
+            datasets: [{ data: [10,6,5,4,4,3,14], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#78909C'], borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/46)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
+    });
+
+    // Taux de non-conformité (horizontal bar)
+    new Chart(document.getElementById('chartTauxNonConf'), {
+        type: 'bar',
+        data: {
+            labels: ['CAC\n(CC Cambrai)', 'CA2C\n(Cc Caudry)', 'CC Sud\nArtois', 'Communes\nindép.'],
+            datasets: [{
+                label: '% non conforme',
+                data: [69.8, 68.0, 100.0, 81.3],
+                backgroundColor: ctx => {
+                    const v = ctx.parsed?.x;
+                    if (v >= 25) return 'rgba(239,83,80,0.7)';
+                    return 'rgba(76,175,80,0.7)';
+                },
+                borderColor: ctx => {
+                    const v = ctx.parsed?.x;
+                    if (v >= 25) return '#EF5350';
+                    return '#4CAF50';
+                },
+                borderWidth: 1, borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true, indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` Non conforme: ${ctx.parsed.x}%` } }
+            },
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, min: 0, max: 100, ticks: { callback: v => v + '%' } },
+                y: { grid: { display: false } }
+            },
+            animation: { duration: 1500 }
+        }
+    });
+}
+</script>
+</body>
+</html>
