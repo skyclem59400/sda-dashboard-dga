@@ -498,18 +498,18 @@
         <div class="kpi-grid">
             <div class="kpi-card" data-delay="0">
                 <div class="kpi-label">Total interventions</div>
-                <div class="kpi-value teal" data-count="347" data-suffix="">0</div>
+                <div class="kpi-value teal" data-count="362" data-suffix="">0</div>
                 <div class="kpi-sub neutral">&#9679; Jour + nuit, tous territoires</div>
             </div>
             <div class="kpi-card" data-delay="100">
                 <div class="kpi-label">Interventions de jour</div>
-                <div class="kpi-value teal" data-count="261" data-suffix="">0</div>
-                <div class="kpi-sub neutral">&#9679; 75% du total</div>
+                <div class="kpi-value teal" data-count="276" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; 76% du total</div>
             </div>
             <div class="kpi-card" data-delay="200">
                 <div class="kpi-label">Astreintes de nuit</div>
                 <div class="kpi-value coral" data-count="86" data-suffix="">0</div>
-                <div class="kpi-sub neutral">&#9679; 25% du total</div>
+                <div class="kpi-sub neutral">&#9679; 24% du total</div>
             </div>
             <div class="kpi-card" data-delay="300">
                 <div class="kpi-label">Interventions nuit non conformes</div>
@@ -523,8 +523,8 @@
             </div>
             <div class="kpi-card" data-delay="500">
                 <div class="kpi-label">Chiens récupérés (jour)</div>
-                <div class="kpi-value teal" data-count="99" data-suffix="">0</div>
-                <div class="kpi-sub neutral">&#9679; vs 161 chats</div>
+                <div class="kpi-value teal" data-count="107" data-suffix="">0</div>
+                <div class="kpi-sub neutral">&#9679; vs 168 chats</div>
             </div>
         </div>
 
@@ -537,14 +537,6 @@
         <div class="section-title">Détail par type d'animal <span>Chiens, chats et interventions sans animaux</span></div>
         <div class="chart-grid">
             <div class="chart-card full-width"><div class="chart-title">Ventilation par animal et créneau — par territoire</div><canvas id="chartInterAnimaux" height="100"></canvas></div>
-        </div>
-
-        <div class="section-title">Répartition par commune <span>Top des communes les plus sollicitées par territoire</span></div>
-        <div class="chart-grid">
-            <div class="chart-card"><div class="chart-title">CAC — CC Cambrai (171 interventions)</div><canvas id="chartCommunesCAC" height="200"></canvas></div>
-            <div class="chart-card"><div class="chart-title">CA2C — Cc Caudry (119 interventions)</div><canvas id="chartCommunesCA2C" height="200"></canvas></div>
-            <div class="chart-card"><div class="chart-title">CC Sud Artois (11 interventions)</div><canvas id="chartCommunesSA" height="200"></canvas></div>
-            <div class="chart-card"><div class="chart-title">Communes indépendantes (46 interventions)</div><canvas id="chartCommunesIndep" height="200"></canvas></div>
         </div>
 
         <div class="section-title">Conformité des astreintes de nuit <span>Interventions conformes vs non conformes</span></div>
@@ -586,7 +578,7 @@
                     </tr>
                     <tr>
                         <td><strong>CC Sud Artois</strong></td>
-                        <td>4</td><td>5</td><td>0</td><td><strong>9</strong></td>
+                        <td>12</td><td>12</td><td>0</td><td><strong>24</strong></td>
                         <td>1</td><td>0</td><td>1</td><td><strong>2</strong></td>
                         <td><span class="evol-badge down" style="font-size:0.85rem;">0</span></td>
                         <td><span class="evol-badge up" style="font-size:0.85rem;">2</span></td>
@@ -600,7 +592,7 @@
                     </tr>
                     <tr class="total-row" style="background: rgba(58,175,169,0.08); font-weight: bold;">
                         <td>TOTAL</td>
-                        <td>99</td><td>161</td><td>2</td><td><strong>261</strong></td>
+                        <td>107</td><td>168</td><td>2</td><td><strong>276</strong></td>
                         <td>64</td><td>9</td><td>13</td><td><strong>86</strong></td>
                         <td><span class="evol-badge down" style="font-size:0.85rem;">25</span></td>
                         <td><span class="evol-badge up" style="font-size:0.85rem;">62</span></td>
@@ -617,8 +609,8 @@
                 <p>Sur l'ensemble des territoires, <strong>près de 3 astreintes de nuit sur 4</strong> sont non conformes. Ce taux alarmant interroge sur les conditions d'intervention nocturne et la capacité à respecter les protocoles.</p>
             </div>
             <div class="alert-card warning" data-delay="100">
-                <h3>&#9888; CAC concentre 49% des interventions</h3>
-                <div class="stat">171 interventions sur 347</div>
+                <h3>&#9888; CAC concentre 47% des interventions</h3>
+                <div class="stat">171 interventions sur 362</div>
                 <p>Le territoire de la <strong>CC Cambrai</strong> représente à lui seul près de la moitié de l'activité d'intervention (128 de jour + 43 de nuit). Une pression considérable sur les équipes de ce secteur.</p>
             </div>
             <div class="alert-card warning" data-delay="200">
@@ -628,8 +620,8 @@
             </div>
             <div class="alert-card info" data-delay="300">
                 <h3>&#10003; Les chats, première cause d'intervention de jour</h3>
-                <div class="stat">161 chats vs 99 chiens</div>
-                <p>En journée, les interventions concernent majoritairement des chats (<strong>62%</strong>), suivis des chiens (38%). Une réalité liée aux chats errants qui nécessitent des captures plus fréquentes.</p>
+                <div class="stat">168 chats vs 107 chiens</div>
+                <p>En journée, les interventions concernent majoritairement des chats (<strong>61%</strong>), suivis des chiens (39%). Une réalité liée aux chats errants qui nécessitent des captures plus fréquentes.</p>
             </div>
             <div class="alert-card info" data-delay="400">
                 <h3>&#10003; Nuit : les chiens dominent</h3>
@@ -846,7 +838,7 @@ function initInterventionCharts() {
         data: {
             labels: territoires,
             datasets: [
-                { label: 'Jour', data: [128,94,9,30], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
+                { label: 'Jour', data: [128,94,24,30], backgroundColor: 'rgba(58,175,169,0.7)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
                 { label: 'Nuit', data: [43,25,2,16], backgroundColor: 'rgba(232,115,74,0.7)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 }
             ]
         },
@@ -869,13 +861,13 @@ function initInterventionCharts() {
         type: 'doughnut',
         data: {
             labels: ['CAC (CC Cambrai)', 'CA2C (Cc Caudry)', 'CC Sud Artois', 'Communes indépendantes'],
-            datasets: [{ data: [171,119,11,46], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D'], borderWidth: 0, hoverOffset: 10 }]
+            datasets: [{ data: [171,119,26,46], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D'], borderWidth: 0, hoverOffset: 10 }]
         },
         options: {
             responsive: true, cutout: '60%',
             plugins: {
                 legend: { position: 'bottom', labels: { font: { size: 11 } } },
-                tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/347)*100).toFixed(1)}%)` } }
+                tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/362)*100).toFixed(1)}%)` } }
             },
             animation: { duration: 1200 }
         }
@@ -887,8 +879,8 @@ function initInterventionCharts() {
         data: {
             labels: ['CAC (CC Cambrai)', 'CA2C (Cc Caudry)', 'CC Sud Artois', 'Communes indépendantes'],
             datasets: [
-                { label: 'Chiens (jour)', data: [47,37,4,11], backgroundColor: 'rgba(58,175,169,0.8)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
-                { label: 'Chats (jour)', data: [81,57,5,18], backgroundColor: 'rgba(58,175,169,0.4)', borderColor: '#5CC8C2', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chiens (jour)', data: [47,37,12,11], backgroundColor: 'rgba(58,175,169,0.8)', borderColor: '#3AAFA9', borderWidth: 1, borderRadius: 4 },
+                { label: 'Chats (jour)', data: [81,57,12,18], backgroundColor: 'rgba(58,175,169,0.4)', borderColor: '#5CC8C2', borderWidth: 1, borderRadius: 4 },
                 { label: 'Chiens (nuit)', data: [29,19,1,15], backgroundColor: 'rgba(232,115,74,0.8)', borderColor: '#E8734A', borderWidth: 1, borderRadius: 4 },
                 { label: 'Chats (nuit)', data: [7,2,0,0], backgroundColor: 'rgba(232,115,74,0.4)', borderColor: '#F09070', borderWidth: 1, borderRadius: 4 },
                 { label: 'Sans animal', data: [8,4,1,2], backgroundColor: 'rgba(136,153,170,0.5)', borderColor: '#8899AA', borderWidth: 1, borderRadius: 4 }
@@ -930,46 +922,6 @@ function initInterventionCharts() {
             },
             animation: { duration: 1500 }
         }
-    });
-
-    // Répartition par commune — CAC
-    new Chart(document.getElementById('chartCommunesCAC'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Cambrai','Iwuy','Neuville-St-Rémy','Raillencourt','Thun-Lévêque','Paillencourt','Autres (19 communes)'],
-            datasets: [{ data: [100,14,11,5,5,5,31], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#78909C'], borderWidth: 0, hoverOffset: 8 }]
-        },
-        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/171)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
-    });
-
-    // Répartition par commune — CA2C
-    new Chart(document.getElementById('chartCommunesCA2C'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Caudry','Le Cateau','Avesnes-les-Aubert','Beauvois-en-Cis','Quiévy','Carnières','Cattenieres','Autres (17 communes)'],
-            datasets: [{ data: [31,26,11,10,9,8,6,18], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#F09070','#78909C'], borderWidth: 0, hoverOffset: 8 }]
-        },
-        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/119)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
-    });
-
-    // Répartition par commune — Sud Artois
-    new Chart(document.getElementById('chartCommunesSA'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Havrincourt','Haplincourt','Hermies','Bapaume','Vaulx-Vraucourt','Barastre'],
-            datasets: [{ data: [4,2,2,1,1,1], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2'], borderWidth: 0, hoverOffset: 8 }]
-        },
-        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/11)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
-    });
-
-    // Répartition par commune — Communes indépendantes
-    new Chart(document.getElementById('chartCommunesIndep'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Lourches','Landrecies','Pronville-en-Artois','Beaurain','Mastaing','Maroilles','Autres (14 communes)'],
-            datasets: [{ data: [10,6,5,4,4,3,14], backgroundColor: ['#3AAFA9','#E8734A','#AB47BC','#FFB74D','#4CAF50','#5CC8C2','#78909C'], borderWidth: 0, hoverOffset: 8 }]
-        },
-        options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} (${((ctx.parsed/46)*100).toFixed(1)}%)` } } }, animation: { duration: 1200 } }
     });
 
     // Taux de non-conformité (horizontal bar)
